@@ -1,6 +1,12 @@
 ## Getting Started
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+L'obiettivo di questo progetto è la realizzazione di un applicazione per la creazione di backup.
+
+- Tramite interfaccia grafica selezionare le cartella 
+- ogni backup deve essere crittografato
+- ogni backup deve essere compresso
+- Tramite server si mantiene traccia delle operazioni eseguite da ogni account.
+
 
 ## Folder Structure
 
