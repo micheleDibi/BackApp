@@ -1,0 +1,32 @@
+.custom_hyperlink {
+    -fx-underline: false;
+    -fx-text-fill: black;
+}
+
+.custom_hyperlink:link {
+    -fx-underline: false;
+    -fx-text-fill: black;
+}
+
+.custom_hyperlink:visited {
+    -fx-underline: false;
+    -fx-text-fill: black;
+}
+
+.custom_hyperlink:hover {
+    -fx-underline: false;
+    -fx-text-fill: black;
+}
+
+.custom_hyperlink:active {
+    -fx-underline: false;
+    -fx-text-fill: black;
+}
+
+.custom_anchorpane {
+    -fx-background-color: red;
+}
+
+.custom_scrollpane {
+    -fx-background-color: red;
+}
