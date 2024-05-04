@@ -2,9 +2,11 @@
 
 L'obiettivo di questo progetto è la realizzazione di un applicazione per la creazione di backup.
 
-- Tramite interfaccia grafica selezionare le cartella 
-- ogni backup deve essere crittografato
-- ogni backup deve essere compresso
+### Cosa è stato sviluppato
+- Realizzata interfaccia grafica per la selezione delle cartelle 
+- Creata la funzionalità di compressione di cartelle
+- Creata la funzionalità di crittografia e decrittografia dei file
+### Cosa è da sviluppare
 - Tramite server si mantiene traccia delle operazioni eseguite da ogni account.
 
 
