@@ -1,73 +1,140 @@
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.time.format.DateTimeFormatter;  
+import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
 import java.io.*;
 import java.util.zip.*;
 
+import org.passay.CharacterRule;
+import org.passay.EnglishCharacterData;
+import org.passay.PasswordGenerator;
+
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 public class FileManager {
-    
-    ArrayList<String> filelist;
-    String destinationPath;
-    private static int sChunk = 8192;
 
-    FileManager(ArrayList<String> filelist, String destinationPath) {
+    private ArrayList<String> filelist;
+    private String destinationPath;
+
+    public void setFileList(ArrayList<String> filelist) {
         this.filelist = filelist;
-        this.destinationPath = destinationPath;
-
-        compressFile();
     }
 
-    int compressFile() {
+    public void setDestinationPath(String destPath) {
+        this.destinationPath = destPath;
+    }
+
+    void compressioneFile(ArrayList<String> filelist, String destPath) throws Exception {
+        this.filelist = filelist;
+        this.destinationPath = destPath;
+
+        compressioneFile();
+    }
+
+    void cryptFile(String pathfile) {
+        String password = generateSecurePassword();
+
+        File fileToCrypt = new File(pathfile);
+
+        execCryptDecrypt(Cipher.ENCRYPT_MODE, password, fileToCrypt, fileToCrypt);
+
+        execCryptDecrypt(Cipher.DECRYPT_MODE, password, fileToCrypt, fileToCrypt);
+    }
+
+    private void compressioneFile() throws Exception {
+
+        if (filelist == null) {
+            throw new Exception("filelist nullo");
+        }
+
+        if (destinationPath == null) {
+            throw new Exception("destinationpath nullo");
+        }
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd_MM_yyyy");
         LocalDateTime now = LocalDateTime.now();
 
-        String zipname = destinationPath + "\\" + dtf.format(now) + ".7z";
-        GZIPOutputStream zipout = null;
-
-        System.out.println(zipname);
+        String zipname = destinationPath + "\\" + dtf.format(now) + ".zip";
 
         try {
-            FileOutputStream out = new FileOutputStream(zipname);
-            zipout = new GZIPOutputStream(out);
-        }
-        catch (IOException e) {
-            System.err.println("Errore nella creazione del file compresso: " + e.getMessage());
-        }
+            File zip = new File(zipname);
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zip));
 
-        byte[] buffer = new byte[sChunk];
-
-        try {
             Iterator<String> iterator = filelist.iterator();
-            
-            while(iterator.hasNext()) {
 
-                String filename = iterator.next();
-                // System.out.println(filename);
-                FileInputStream in = new FileInputStream(filename);
-                int length;
-
-                while ((length = in.read(buffer, 0, sChunk)) != -1) {
-                    zipout.write(buffer, 0, length);
+            try {
+                while (iterator.hasNext()) {
+                    ZipEntry ze = new ZipEntry(iterator.next());
+                    out.putNextEntry(ze);
                 }
 
-                in.close();
+            } catch (IOException e) {
+                System.out.println("Error in creating the zip file.");
             }
-        }
-        catch (IOException e) {
-            System.err.println("Errore durante l'inserimento dei file nel file compresso: " + e.getMessage());
-        }
 
+            try {
+                out.close();
+            } catch (IOException e) {
+            }
+
+            cryptFile(zipname);
+
+        } catch (FileNotFoundException e) {
+            System.out.println("The output file was not found.");
+        }
+    }
+
+    private static String generateSecurePassword() {
+
+        CharacterRule LCR = new CharacterRule(EnglishCharacterData.LowerCase);
+        LCR.setNumberOfCharacters(6);
+
+        CharacterRule UCR = new CharacterRule(EnglishCharacterData.UpperCase);
+        UCR.setNumberOfCharacters(6);
+
+        CharacterRule DR = new CharacterRule(EnglishCharacterData.Digit);
+        DR.setNumberOfCharacters(6);
+
+        CharacterRule SR = new CharacterRule(EnglishCharacterData.Special);
+        SR.setNumberOfCharacters(6);
+
+        PasswordGenerator passwordGenerator = new PasswordGenerator();
+
+        return passwordGenerator.generatePassword(24, SR, LCR, UCR, DR);
+    }
+
+    private static void execCryptDecrypt(int cipherMode, String key, File inputFile, File outputFile) {
         try {
-            zipout.close();
-        }
-        catch (IOException e) {
-            System.err.println("Errore durante la chiusura del file compresso: " + e.getMessage());
-        }
+            Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES");
 
-        return 1;
+            cipher.init(cipherMode, secretKey);
 
+            byte[] inputBytes;
+
+            try (FileInputStream inputStream = new FileInputStream(inputFile)) {
+                inputBytes = new byte[(int) inputFile.length()];
+                inputStream.read(inputBytes);
+            }
+
+            byte[] outputBytes = cipher.doFinal(inputBytes);
+
+            try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+                outputStream.write(outputBytes);
+            }
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException
+                | InvalidKeyException | BadPaddingException
+                | IllegalBlockSizeException | IOException e) {
+            e.printStackTrace();
+        }
     }
 }

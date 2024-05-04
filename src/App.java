@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +18,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.application.Application;
 
 public class App extends Application {
@@ -96,9 +94,22 @@ public class App extends Application {
 
                         if (selectedDirectory != null) {
                             System.out.println(selectedDirectory.getAbsolutePath());
-                            // System.out.println(checkedPath.toString());
 
-                            FileManager fm = new FileManager(checkedPath, selectedDirectory.getAbsolutePath());
+                            FileManager fm = new FileManager();
+
+                            try {
+                                fm.compressioneFile(checkedPath, selectedDirectory.getAbsolutePath());
+
+                                Alert a = new Alert(AlertType.CONFIRMATION);
+                                a.setTitle("Operazione completata");
+                                a.setHeaderText("Operazione completata con successo.");
+                                a.setContentText("Puoi trovare il backup crittografato: " + selectedDirectory.getAbsolutePath());
+                                
+                                a.showAndWait();
+                            }
+                            catch (Exception exc) {
+                                exc.printStackTrace();
+                            }
 
                         } else {
                             Alert a = new Alert(AlertType.ERROR);
@@ -296,6 +307,8 @@ public class App extends Application {
 
     public static void main(String[] args) throws Exception {
         System.out.println("Inizializzazione BackApp...");
+
+        ConnectionManager.readUtenti();
 
         launch();
     }
