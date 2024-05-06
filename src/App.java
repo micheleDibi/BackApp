@@ -33,6 +33,8 @@ public class App extends Application {
     private @FXML MenuItem currentPathMenu;
     private @FXML Button btnIndietro, btnStartBackup;
 
+    private int utente_id = 0;
+
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("fxml/main.fxml"));
@@ -305,10 +307,8 @@ public class App extends Application {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        System.out.println("Inizializzazione BackApp...");
-
-        ConnectionManager.readUtenti();
+    public App(int utente_id) {
+        this.utente_id = utente_id;
 
         launch();
     }
