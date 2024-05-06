@@ -13,6 +13,7 @@
         "lib/passay-1.6.4.jar",
         "lib/jackson-databind-2.17.0.jar",
         "lib/gson-2.10.1.jar",
-        "lib/jackson-core-2.17.0.jar"
+        "lib/jackson-core-2.17.0.jar",
+        "lib/jackson-annotations-2.17.1.jar"
     ]
 }
